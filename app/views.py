@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from .models import Post, Profile, Follow, Comment
+from django.contrib.auth.models import User
+from .forms import PostForm
 
 # Create your views here.
+
 @login_required(login_url='login')
 def home(request):
     posts = Post.objects.all()
@@ -18,3 +22,4 @@ def home(request):
         'users':users,
     }
     return render(request, 'home.html', context)
+      
