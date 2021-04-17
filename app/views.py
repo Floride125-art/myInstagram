@@ -5,6 +5,10 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 from .forms import PostForm, UserCreationForm, UpdateUserProfileForm, CommentForm
 from django.contrib.auth import login, authenticate
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+from django.views.generic import RedirectView
+from rest_framework.views import APIView
 
 # Create your views here.
 
@@ -91,3 +95,48 @@ def comment(request, pk):
         'total_likes': image.total_likes()
     }
     return render(request, 'post.html', context)
+class PostLikeAPIToggle(APIView):
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, id=None, format=None):
+        # id = self.kwargs.get('id')
+        obj = get_object_or_404(Post, pk=id)
+        url_ = obj.get_absolute_url()
+        user = self.request.user
+        updated = False
+        liked = False
+        if user in obj.likes.all():
+            liked = False
+            obj.likes.remove(user)
+        else:
+            liked = True
+            obj.likes.add(user)
+        updated = True
+        data = {
+
+            'updated': updated,
+            'liked': liked,
+        }
+        return Response(data)
+
+
+def like(request):
+    # image = get_object_or_404(Post, id=request.POST.get('image_id'))
+    image = get_object_or_404(Post, id=request.POST.get('id'))
+    is_liked = False
+    if image.likes.filter(id=request.user.id).exists():
+        image.likes.remove(request.user)
+        is_liked = False
+    else:
+        image.likes.add(request.user)
+        is_liked = False
+
+    context = {
+        'image': image,
+        'is_liked': is_liked,
+        'total_likes': image.total_likes()
+    }
+    if request.is_ajax():
+        html = render_to_string('like.html', context, request=request)
+        return JsonResponse({'form': html})
