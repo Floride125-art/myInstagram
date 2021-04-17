@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<style>
+    .container {
+        margin-top: 6%;
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="card justify-content-center">
+                {% if user.is_authenticated %}
+                <div class="mx-auto">
+                    <a href="{% url 'profile' user.username  %}"><img src="{{user.profile.profile.url}}"
+                            class="rounded-circle border mx-auto" alt="{{user.username}}" width="85" height="85"></a>
+                </div>
+                <div class="card-body mx-auto">
+                    <p class="card-title">{{user.profile.bio}}</p>
+                    <a href="#" class="btn" data-toggle="modal" style="background-color: #F94144; color:white"
+                        data-target="#imageUpload">Add Post</a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal fade" id="imageUpload" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Image Upload</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="" method="post" enctype="multipart/form-data" novalidate>
+                                {% csrf_token %}
+                                {{ form|crispy }}
+                                <button class="btn btn-sm btn-success">Upload</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-dismiss="modal">
+                                    Close
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+
+            {% for post in posts %}
+
+            <div class="card mb-5">
+                <div class="row p-2 card-title">
+                    <img src="{{post.user.profile.url}}" class="rounded-circle border ml-3 mt-2  mr-3"
+                        alt="{{post.user.user.username}}" width="35" height="35">
+                    <p class="p-2">{{post.user.user.username}}</p>
+                </div>
+                <img class="card-img-top" src="{{post.image.url}}" alt="{{post.name}}">
+                <div class="iconic ml-2">
+                    <button class="btn btn-sm" type="submit" name="image_id" value="{{post.pk}}">
+                        {{post.likes.count}} <i class="far fa-heart hearticon mx-auto" aria-hidden="true"></i></a>
+                    </button>
+                    <button class="btn btn-sm" type="submit">{{post.comments.count}}<i
+                            class="far fa-comment hearticon mx-auto" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="container">
+                    <p>{{post.caption}}</p>
+                </div>
+                <a href="{% url 'comment' post.pk %}" class="btn btn-block  p-2"
+                        style="background-color: #F94144; color: white;">View Post</a>
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="col-md-3">
+
+            {% for user in users %}
+            <div class="row p-1" style="width: 18rem; border: 1px solid grey;">
+                <img class="rounded-circle" src="{{ user.profile.profile.url }}" width="45px" height="45px">
+                <p><span><a href="{% url 'user_profile' user.username  %}">{{user.username}}</a></span></p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
