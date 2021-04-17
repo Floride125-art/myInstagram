@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Post, Profile, Follow, Comment
+from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from .forms import PostForm, UserCreationForm, UpdateUserProfileForm
+from .forms import PostForm, UserCreationForm, UpdateUserProfileForm, CommentForm
 from django.contrib.auth import login, authenticate
 
 # Create your views here.
@@ -67,3 +68,26 @@ def unfollow(request, pk):
         unfollow.delete()
         return redirect('user_profile', user_.user.username)    
 
+@login_required(login_url='login')
+def comment(request, pk):
+    image = get_object_or_404(Post, pk=pk)
+    is_liked = False
+    if image.likes.filter(id=request.user.id).exists():
+        is_liked = True
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = image
+            comment.user = request.user.profile
+            comment.save()
+            return HttpResponseRedirect(request.path_info)
+    else:
+        form = CommentForm()
+    context = {
+        'image': image,
+        'form': form,
+        'is_liked': is_liked,
+        'total_likes': image.total_likes()
+    }
+    return render(request, 'post.html', context)
