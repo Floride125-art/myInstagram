@@ -15,3 +15,10 @@ def update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
+class Post(models.Model):
+    image = models.ImageField(upload_to='posts/')
+    name = models.CharField(max_length=250, blank=True)
+    caption = models.CharField(max_length=250, blank=True)
+    date = models.DateTimeField(auto_now_add=True, null=True)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts')
+    likes = models.ManyToManyField(User, related_name='likes', blank=True, )
