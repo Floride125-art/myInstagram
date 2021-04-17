@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Post, Profile, Follow, Comment
 from django.contrib.auth.models import User
-from .forms import PostForm, UserCreationForm
+from .forms import PostForm, UserCreationForm, UpdateUserProfileForm
 from django.contrib.auth import login, authenticate
 
 # Create your views here.
@@ -36,3 +36,19 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
+@login_required(login_url='login')
+def profile(request, username):
+    images = request.user.profile.posts.all()
+    if request.method == 'POST':
+        prof_form = UpdateUserProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if prof_form.is_valid():
+            prof_form.save()
+            return redirect(request.path_info)
+    else:
+        prof_form = UpdateUserProfileForm(instance=request.user.profile)
+    context = {
+        'prof_form': prof_form,
+        'images': images,
+
+    }
+    return render(request, 'profile.html', context)
