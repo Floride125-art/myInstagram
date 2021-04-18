@@ -10,7 +10,7 @@ Floride Tuyisenge
  * Django-bootstrap
  
 ## contact details
-Email:flo.tuyisenge@gmail.com
+Email:flo.tuyisenge@gmail.com/ FTuyisenge120@daviscollege.com
 Phone:+250780674917
 
 ### License
@@ -32,6 +32,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 Copyright (c) 2020 myInstagram
 
 
